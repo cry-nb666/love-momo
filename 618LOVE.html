@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨记录和沫沫的小网站✨</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: '微软雅黑', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            transition: background-image 1s ease; /* 背景切换过渡效果 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #000; /* 初始背景色 */
+            overflow: hidden;
+        }
+
+        /* 视频背景容器 */
+        #video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        #background-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            object-fit: cover;
+        }
+
+        /* 顶部导航栏 */
+        .nav-bar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            background-color: rgba(0,0,0,0.3);
+            padding: 8px 12px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background-color: rgba(0,0,0,0.6);
+            transform: scale(1.1);
+        }
+
+        /* 主内容区 */
+        .main-content {
+            text-align: center;
+            color: white;
+            padding: 50px;
+            z-index: 100;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .title {
+            font-size: 48px;
+            color: #ff6b6b;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .countdown {
+            font-size: 36px;
+            color: #4ecdc4;
+            margin: 20px 0;
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+        }
+
+        .subtitle {
+            font-size: 24px;
+            color: #f7fff7;
+            margin-bottom: 50px;
+            line-height: 1.6;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* 音乐播放器样式 */
+        #music-player {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background-color: rgba(0,0,0,0.5);
+            padding: 10px 20px;
+            border-radius: 30px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        #music-toggle {
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        #music-progress {
+            flex-grow: 1;
+            height: 4px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+            max-width: 200px;
+        }
+
+        #progress-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background-color: #ff6b6b;
+            border-radius: 2px;
+            width: 0%;
+        }
+
+        #time-display {
+            font-size: 14px;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* 加载提示 */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #ff6b6b;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            animation: rotation 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 视频/图片切换按钮 */
+        #bg-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background-color: rgba(0,0,0,0.5);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        #bg-toggle:hover {
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        /* 视频控制按钮 */
+        #video-control {
+            position: fixed;
+            bottom: 20px;
+            right: 160px;
+            z-index: 1000;
+            background-color: rgba(0,0,0,0.5);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        #video-control:hover {
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalIn 0.3s ease;
+        }
+        
+        @keyframes modalIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .close-modal:hover {
+            color: #333;
+        }
+        
+        .diary-entry {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-left: 3px solid #ff6b6b;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            position: relative;
+        }
+        
+        .diary-date {
+            font-weight: bold;
+            color: #ff6b6b;
+            margin-bottom: 5px;
+        }
+        
+        .diary-content {
+            line-height: 1.6;
+        }
+        
+        .diary-controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .diary-controls button {
+            flex-grow: 1;
+            padding: 8px 15px;
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .diary-controls button:hover {
+            background-color: #e65252;
+        }
+        
+        .new-diary {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+        }
+        
+        .new-diary textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            min-height: 100px;
+            font-family: '微软雅黑', sans-serif;
+        }
+        
+        .delete-diary {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #ff6b6b;
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.7;
+        }
+        
+        .delete-diary:hover {
+            opacity: 1;
+        }
+        
+        /* 手机适配 */
+        @media (max-width: 768px) {
+            .title { font-size: 32px; }
+            .countdown { font-size: 24px; }
+            .subtitle { font-size: 18px; }
+            .nav-btn { font-size: 20px; width: 36px; height: 36px; }
+            #music-player { padding: 8px 15px; gap: 10px; }
+            #time-display { display: none; }
+            #bg-toggle { bottom: 80px; right: 20px; }
+            #video-control { bottom: 120px; right: 20px; }
+            
+            .modal-content {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            .diary-controls {
+                flex-direction: column;
+            }
+            
+            .diary-controls button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 视频背景容器 -->
+    <div id="video-container">
+        <video id="background-video" autoplay muted loop playsinline>
+            <source src="background.mp4" type="video/mp4">
+            <!-- 可替换为你的视频文件 -->
+        </video>
+    </div>
+
+    <!-- 加载提示 -->
+    <div id="loading-overlay">
+        <div class="loader"></div>
+        <p>点击屏幕开始我们的回忆之旅</p>
+    </div>
+
+    <!-- 顶部导航栏（可扩展功能按钮） -->
+    <div class="nav-bar">
+        <i class="nav-btn" id="music-toggle">🎵</i>
+        <i class="nav-btn" id="openDiary">📔</i>
+    </div>
+
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        <h1 class="title">✨ 专属我们的爱情 ✨</h1>
+        <div class="countdown" id="loveDays">加载中...</div>
+        <p class="subtitle">
+            每一分每一秒，<br>
+            都是我们 ❤️
+        </p>
+    </div>
+
+    <!-- 音乐播放器 -->
+    <div id="music-player">
+        <i id="music-icon" class="fa fa-play">▶️</i>
+        <div id="music-progress">
+            <div id="progress-bar"></div>
+        </div>
+        <div id="time-display">00:00</div>
+    </div>
+
+    <!-- 视频/图片切换按钮 -->
+    <div id="bg-toggle">关闭背景</div>
+    
+    <!-- 视频控制按钮 -->
+    <div id="video-control">下一个</div>
+
+    <!-- 日记弹窗 -->
+    <div id="diary-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>📔 我们的爱情日记</h2>
+            <div id="diary-entries" class="diary-entries">
+                <!-- 日记条目将通过JS动态添加 -->
+            </div>
+            <div class="diary-controls">
+                <button id="add-diary">添加新日记</button>
+                <button id="save-diaries">保存日记</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 背景音乐播放器 -->
+    <audio id="backgroundMusic" loop>
+        <source src="特别的人 - 方大同.mp3" type="audio/mpeg">
+        <!-- 可替换为其他音乐平台外链，如网易云音乐/QQ音乐的外链 -->
+    </audio>
+
+    <script>
+        // 配置项 - 请务必修改以下内容！
+        const CONFIG = {
+            loveStartDate: '2024-06-18', // 恋爱开始日期（YYYY-MM-DD）
+            mediaList: [
+                // 媒体项格式: {type: 'image'/'video', src: '路径', duration: 显示时长(仅图片需要)}
+                {type: 'image', src: '1.jpg', duration: 5000},
+                {type: 'image', src: '2.jpg', duration: 5000},
+                {type: 'image', src: '3.jpg', duration: 5000},
+                {type: 'image', src: '4.jpg', duration: 5000},
+                {type: 'image', src: '5.jpg', duration: 5000},
+                {type: 'image', src: '6.jpg', duration: 5000},
+                {type: 'image', src: '7.jpg', duration: 5000},
+                {type: 'image', src: '8.jpg', duration: 5000},
+                {type: 'image', src: '9.jpg', duration: 5000},
+                {type: 'image', src: '10.jpg', duration: 5000},
+                {type: 'image', src: '11.jpg', duration: 5000},
+                {type: 'image', src: '12.jpg', duration: 5000},
+                {type: 'image', src: '13.jpg', duration: 5000},
+                {type: 'image', src: '14.jpg', duration: 5000},
+                {type: 'image', src: '15.jpg', duration: 5000},
+                {type: 'image', src: '16.jpg', duration: 5000},
+                {type: 'image', src: '17.jpg', duration: 5000},
+                {type: 'image', src: '18.jpg', duration: 5000},
+                {type: 'image', src: '19.jpg', duration: 5000},
+                {type: 'image', src: '20.jpg', duration: 5000},
+                {type: 'image', src: '21.jpg', duration: 5000},
+                {type: 'image', src: '22.jpg', duration: 5000},
+                {type: 'image', src: '23.jpg', duration: 5000},
+                {type: 'image', src: '24.jpg', duration: 5000},
+                {type: 'image', src: '25.jpg', duration: 5000},
+                {type: 'image', src: '26.jpg', duration: 5000},
+                {type: 'image', src: '27.jpg', duration: 5000},
+                {type: 'image', src: '28.jpg', duration: 5000},
+                {type: 'image', src: '29.jpg', duration: 5000},
+                {type: 'image', src: '30.jpg', duration: 5000},
+                {type: 'image', src: '31.jpg', duration: 5000},
+                {type: 'image', src: '32.jpg', duration: 5000},
+                {type: 'image', src: '33.jpg', duration: 5000},
+                {type: 'image', src: '34.jpg', duration: 5000},
+                {type: 'image', src: '35.jpg', duration: 5000},
+                {type: 'image', src: '36.jpg', duration: 5000},
+                {type: 'image', src: '37.jpg', duration: 5000},
+                {type: 'image', src: '38.jpg', duration: 5000},
+                {type: 'image', src: '39.jpg', duration: 5000},
+                {type: 'image', src: '40.jpg', duration: 5000},
+                {type: 'image', src: '41.jpg', duration: 5000},
+                {type: 'image', src: '42.jpg', duration: 5000},
+                {type: 'image', src: '43.jpg', duration: 5000},
+                {type: 'image', src: '44.jpg', duration: 5000},
+                {type: 'image', src: '45.jpg', duration: 5000},
+                {type: 'image', src: '46.jpg', duration: 5000},
+                {type: 'image', src: '47.jpg', duration: 5000},
+                {type: 'image', src: '48.jpg', duration: 5000},
+                {type: 'image', src: '49.jpg', duration: 5000},
+                {type: 'image', src: '50.jpg', duration: 5000},
+                {type: 'image', src: '51.jpg', duration: 5000},
+                {type: 'image', src: '52.jpg', duration: 5000},
+                {type: 'image', src: '53.jpg', duration: 5000},
+                {type: 'image', src: '54.jpg', duration: 5000},
+                {type: 'image', src: '55.jpg', duration: 5000},
+                {type: 'image', src: '56.jpg', duration: 5000},
+                {type: 'image', src: '57.jpg', duration: 5000},
+                {type: 'image', src: '58.jpg', duration: 5000},
+                {type: 'image', src: '59.jpg', duration: 5000},
+                {type: 'image', src: '60.jpg', duration: 5000},
+                {type: 'image', src: '61.jpg', duration: 5000},
+                {type: 'image', src: '62.jpg', duration: 5000},
+                {type: 'image', src: '63.jpg', duration: 5000},
+                {type: 'image', src: '64.jpg', duration: 5000},
+                {type: 'image', src: '65.jpg', duration: 5000},
+                {type: 'image', src: '66.jpg', duration: 5000},
+                {type: 'image', src: '67.jpg', duration: 5000},
+                {type: 'image', src: '68.jpg', duration: 5000},
+                {type: 'image', src: '69.jpg', duration: 5000},
+                {type: 'image', src: '70.jpg', duration: 5000},
+                {type: 'image', src: '71.jpg', duration: 5000},
+                {type: 'image', src: '72.jpg', duration: 5000},
+                {type: 'image', src: '73.jpg', duration: 5000},
+                {type: 'image', src: '74.jpg', duration: 5000},
+                {type: 'image', src: '75.jpg', duration: 5000},
+                {type: 'image', src: '76.jpg', duration: 5000},
+                {type: 'image', src: '77.jpg', duration: 5000},
+                {type: 'image', src: '78.jpg', duration: 5000},
+                
+
+                {type: 'video', src: '1.mp4', duration: 12000},
+                {type: 'video', src: '2.mp4', duration: 12000},
+                {type: 'video', src: '3.mp4', duration: 12000},
+                {type: 'video', src: '4.mp4', duration: 12000},
+                {type: 'video', src: '5.mp4', duration: 12000},
+                {type: 'video', src: '6.mp4', duration: 12000},
+                {type: 'video', src: '7.mp4', duration: 12000},
+                {type: 'video', src: '8.mp4', duration: 12000},
+                {type: 'video', src: '9.mp4', duration: 12000},
+                {type: 'video', src: '10.mp4', duration: 12000},
+                {type: 'video', src: '11.mp4', duration: 12000},
+                
+                // 继续添加更多媒体...
+            ],
+            musicUrl: '特别的人 - 方大同.mp3', // 音乐文件地址
+            initialVolume: 0.7, // 初始音量 (0-1)
+            defaultToMediaPlayer: true, // 默认使用媒体播放器
+            shuffleMedia: true // 随机播放媒体
+        };
+
+        // 状态变量
+        let usingMediaPlayer = CONFIG.defaultToMediaPlayer;
+        let mediaIndex = 0;
+        let mediaChangeTimer = null;
+        let isPlaying = false;
+        let backgroundVideoLoaded = false; // 添加视频加载状态变量
+
+        // ----------------- 工具函数 -----------------
+        // 格式化时间为 MM:SS
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = Math.floor(seconds % 60);
+            return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        // 操作Cookie
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        // ----------------- 恋爱时长计算 -----------------
+        function updateLoveDays() {
+            const start = new Date(CONFIG.loveStartDate);
+            const now = new Date();
+            const diff = now - start;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById('loveDays').textContent = `我们已经在一起：${days}天 ${hours}小时 ${minutes}分钟`;
+        }
+
+        // ----------------- 背景控制 -----------------
+        // 加载媒体（图片或视频）
+        function loadMedia(mediaItem) {
+            const videoContainer = document.getElementById('video-container');
+            const backgroundVideo = document.getElementById('background-video');
+            const body = document.body;
+            
+            // 隐藏当前媒体
+            if (mediaItem.type === 'video') {
+                // 视频背景
+                videoContainer.style.opacity = '0';
+                body.style.backgroundImage = 'none';
+                
+                // 重置视频
+                backgroundVideo.pause();
+                backgroundVideo.src = mediaItem.src;
+                backgroundVideo.load();
+                
+                // 视频加载完成后显示
+                backgroundVideo.addEventListener('canplay', () => {
+                    backgroundVideoLoaded = true;
+                    if (usingMediaPlayer && isPlaying) {
+                        videoContainer.style.opacity = '1';
+                        backgroundVideo.play().catch(e => console.log('视频自动播放失败:', e));
+                        
+                        // 设置下一个媒体切换时间
+                        setupMediaChangeTimer(mediaItem.duration);
+                    }
+                }, { once: true });
+                
+                // 视频加载错误时回退到下一个媒体
+                backgroundVideo.addEventListener('error', () => {
+                    console.error('视频加载失败，加载下一个媒体');
+                    playNextMedia();
+                }, { once: true });
+            } else {
+                // 图片背景
+                videoContainer.style.opacity = '0';
+                body.style.backgroundImage = `url('${mediaItem.src}')`;
+                
+                // 设置下一个媒体切换时间
+                setupMediaChangeTimer(mediaItem.duration);
+            }
+        }
+
+        // 设置媒体切换计时器
+        function setupMediaChangeTimer(duration) {
+            if (mediaChangeTimer) {
+                clearInterval(mediaChangeTimer);
+            }
+            
+            mediaChangeTimer = setInterval(playNextMedia, duration);
+        }
+
+        // 播放下一个媒体
+        function playNextMedia() {
+            if (CONFIG.mediaList.length === 0) return;
+            
+            // 选择下一个媒体
+            if (CONFIG.shuffleMedia) {
+                mediaIndex = Math.floor(Math.random() * CONFIG.mediaList.length);
+            } else {
+                mediaIndex = (mediaIndex + 1) % CONFIG.mediaList.length;
+            }
+            
+            // 加载新媒体
+            loadMedia(CONFIG.mediaList[mediaIndex]);
+        }
+
+        // 切换媒体播放器状态
+        function toggleMediaPlayer() {
+            usingMediaPlayer = !usingMediaPlayer;
+            
+            if (usingMediaPlayer) {
+                // 启用媒体播放器
+                document.getElementById('bg-toggle').textContent = '关闭背景';
+                
+                // 如果有媒体列表，开始播放
+                if (CONFIG.mediaList.length > 0) {
+                    isPlaying = true;
+                    loadMedia(CONFIG.mediaList[mediaIndex]);
+                }
+            } else {
+                // 关闭媒体播放器
+                document.getElementById('bg-toggle').textContent = '打开背景';
+                
+                // 停止当前播放
+                isPlaying = false;
+                if (mediaChangeTimer) {
+                    clearInterval(mediaChangeTimer);
+                }
+                
+                // 显示默认背景
+                const body = document.body;
+                body.style.backgroundImage = '';
+                body.style.backgroundColor = '#000';
+            }
+        }
+
+        // ----------------- 音乐控制 -----------------
+        function setupMusicControl() {
+            const audio = document.getElementById('backgroundMusic');
+            const musicIcon = document.getElementById('music-icon');
+            const musicProgress = document.getElementById('music-progress');
+            const progressBar = document.getElementById('progress-bar');
+            const timeDisplay = document.getElementById('time-display');
+            
+            // 设置音量
+            audio.volume = CONFIG.initialVolume;
+            
+            // 检查用户之前的音乐偏好
+            const musicPreference = getCookie('music_preference');
+            if (musicPreference === 'mute') {
+                audio.muted = true;
+                musicIcon.textContent = '🔇';
+            }
+            
+            // 尝试自动播放音乐
+            function tryPlayMusic() {
+                audio.play().then(() => {
+                    // 播放成功
+                    musicIcon.textContent = '🔊';
+                    hideLoadingOverlay();
+                }).catch(e => {
+                    console.log('自动播放失败:', e);
+                    // 显示加载提示，等待用户交互
+                    document.getElementById('loading-overlay').querySelector('p').textContent = '点击屏幕播放音乐';
+                });
+            }
+            
+            // 用户首次交互时播放音乐和视频
+            function handleFirstInteraction() {
+                if (audio.paused) {
+                    tryPlayMusic();
+                    // 首次交互时也尝试播放视频
+                    const backgroundVideo = document.getElementById('background-video');
+                    if (usingMediaPlayer && backgroundVideo.paused && backgroundVideoLoaded) {
+                        backgroundVideo.play().catch(e => console.log('视频自动播放失败:', e));
+                    }
+                }
+                // 移除事件监听器，避免重复触发
+                document.removeEventListener('click', handleFirstInteraction);
+                document.removeEventListener('touchstart', handleFirstInteraction);
+            }
+            
+            // 添加首次交互监听器
+            document.addEventListener('click', handleFirstInteraction);
+            document.addEventListener('touchstart', handleFirstInteraction);
+            
+            // 音乐控制按钮点击事件
+            musicIcon.addEventListener('click', () => {
+                if (audio.paused) {
+                    audio.play();
+                    musicIcon.textContent = '🔊';
+                    setCookie('music_preference', 'play', 365);
+                } else {
+                    audio.pause();
+                    musicIcon.textContent = '⏸️';
+                    setCookie('music_preference', 'pause', 365);
+                }
+            });
+            
+            // 静音/取消静音
+            document.getElementById('music-toggle').addEventListener('click', () => {
+                audio.muted = !audio.muted;
+                if (audio.muted) {
+                    musicIcon.textContent = '🔇';
+                    setCookie('music_preference', 'mute', 365);
+                } else {
+                    musicIcon.textContent = '🔊';
+                    setCookie('music_preference', 'unmute', 365);
+                }
+            });
+            
+            // 更新进度条和时间显示
+            audio.addEventListener('timeupdate', () => {
+                const progress = (audio.currentTime / audio.duration) * 100;
+                progressBar.style.width = `${progress}%`;
+                timeDisplay.textContent = formatTime(audio.currentTime);
+            });
+            
+            // 点击进度条跳转
+            musicProgress.addEventListener('click', (e) => {
+                const progressWidth = musicProgress.clientWidth;
+                const clickPosition = e.offsetX;
+                const seekTime = (clickPosition / progressWidth) * audio.duration;
+                audio.currentTime = seekTime;
+            });
+            
+            // 音乐加载完成
+            audio.addEventListener('loadedmetadata', () => {
+                timeDisplay.textContent = formatTime(audio.currentTime);
+            });
+            
+            // 监听音乐播放状态更新按钮图标
+            audio.addEventListener('play', () => {
+                musicIcon.textContent = '🔊';
+            });
+            
+            audio.addEventListener('pause', () => {
+                musicIcon.textContent = '⏸️';
+            });
+        }
+
+        // ----------------- 加载覆盖层控制 -----------------
+        function hideLoadingOverlay() {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            loadingOverlay.style.opacity = '0';
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+            }, 500);
+        }
+
+        // ----------------- 日记功能实现 -----------------
+        function setupDiaryFunctionality() {
+            const diaryModal = document.getElementById('diary-modal');
+            const closeModal = document.querySelector('.close-modal');
+            const openDiaryBtn = document.getElementById('openDiary');
+            const diaryEntries = document.getElementById('diary-entries');
+            const addDiaryBtn = document.getElementById('add-diary');
+            const saveDiariesBtn = document.getElementById('save-diaries');
+            
+            // 初始日记数据（可从本地存储加载）
+            let diaries = JSON.parse(localStorage.getItem('loveDiaries')) || [
+                {
+                    date: '2025-06-09',
+                    content: '今天是周一，前两天突发奇想（大概是3号），想给我们做一个网站（其实也不是突发奇想，我之前就有想到过，用独特的方式记录一下我们）那为什么是今天才开始有日记呢，那是因为今天才把网站的框架搭好嘻嘻嘻'
+                },
+                {
+                    date: '2025-06-10',
+                    content: '今天是周二，我们今天考试了，嘻嘻嘻嘻嘻有点没亲够，还想亲亲~，咱们今天还说马上一周年，我们该咋过呀，我也在思考，嘤嘤嘤，我也不知道咋过，都不知道能不能见面嘞'
+                },
+                
+            ];
+            
+            // 渲染日记列表
+            function renderDiaries() {
+                diaryEntries.innerHTML = '';
+                
+                if (diaries.length === 0) {
+                    diaryEntries.innerHTML = '<p>还没有日记记录哦，点击"添加新日记"按钮开始记录吧~</p>';
+                    return;
+                }
+                
+                diaries.forEach((diary, index) => {
+                    const entryElement = document.createElement('div');
+                    entryElement.className = 'diary-entry';
+                    entryElement.innerHTML = `
+                        <div class="delete-diary" data-index="${index}">❌</div>
+                        <div class="diary-date">${formatDate(diary.date)}</div>
+                        <div class="diary-content">${diary.content}</div>
+                    `;
+                    diaryEntries.appendChild(entryElement);
+                });
+                
+                // 添加删除按钮事件
+                document.querySelectorAll('.delete-diary').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = parseInt(e.target.getAttribute('data-index'));
+                        deleteDiary(index);
+                    });
+                });
+            }
+            
+            // 删除日记
+            function deleteDiary(index) {
+                if (confirm('确定要删除这篇日记吗？')) {
+                    diaries.splice(index, 1);
+                    saveDiariesToLocalStorage();
+                    renderDiaries();
+                }
+            }
+            
+            // 格式化日期
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                const year = date.getFullYear();
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const day = date.getDate().toString().padStart(2, '0');
+                const weekMap = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+                const weekDay = weekMap[date.getDay()];
+                return `${year}年${month}月${day}日 ${weekDay}`;
+            }
+            
+            // 打开日记弹窗
+            openDiaryBtn.addEventListener('click', () => {
+                renderDiaries();
+                diaryModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden'; // 防止背景滚动
+            });
+            
+            // 关闭日记弹窗
+            function closeDiaryModal() {
+                diaryModal.style.display = 'none';
+                document.body.style.overflow = ''; // 恢复背景滚动
+            }
+            
+            closeModal.addEventListener('click', closeDiaryModal);
+            
+            // 点击弹窗背景关闭
+            diaryModal.addEventListener('click', (e) => {
+                if (e.target === diaryModal) {
+                    closeDiaryModal();
+                }
+            });
+            
+            // 添加新日记
+            let newDiaryActive = false;
+            addDiaryBtn.addEventListener('click', () => {
+                if (newDiaryActive) {
+                    // 已有新建日记表单，提交当前表单
+                    saveCurrentDiary();
+                } else {
+                    // 创建新建日记表单
+                    const today = new Date();
+                    const year = today.getFullYear();
+                    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+                    const day = today.getDate().toString().padStart(2, '0');
+                    const newDiaryDate = `${year}-${month}-${day}`;
+                    
+                    const newDiaryForm = document.createElement('div');
+                    newDiaryForm.className = 'new-diary';
+                    newDiaryForm.innerHTML = `
+                        <div class="diary-date">${formatDate(newDiaryDate)}</div>
+                        <textarea placeholder="写下今天的故事..."></textarea>
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <button id="save-new-diary">保存日记</button>
+                            <button id="cancel-new-diary">取消</button>
+                        </div>
+                    `;
+                    diaryEntries.appendChild(newDiaryForm);
+                    
+                    newDiaryActive = true;
+                    
+                    // 添加保存和取消按钮事件
+                    document.getElementById('save-new-diary').addEventListener('click', saveCurrentDiary);
+                    document.getElementById('cancel-new-diary').addEventListener('click', () => {
+                        newDiaryActive = false;
+                        diaryEntries.removeChild(newDiaryForm);
+                    });
+                }
+            });
+            
+            // 保存当前新建的日记
+            function saveCurrentDiary() {
+                const textarea = document.querySelector('.new-diary textarea');
+                if (!textarea) return;
+                
+                const content = textarea.value.trim();
+                if (content === '') {
+                    alert('日记内容不能为空');
+                    return;
+                }
+                
+                const dateElement = document.querySelector('.new-diary .diary-date');
+                const dateText = dateElement.textContent;
+                const dateMatch = dateText.match(/(\d{4})年(\d{2})月(\d{2})日/);
+                if (!dateMatch) return;
+                
+                const date = `${dateMatch[1]}-${dateMatch[2]}-${dateMatch[3]}`;
+                
+                // 添加到日记数组
+                diaries.push({
+                    date: date,
+                    content: content
+                });
+                
+                // 保存到本地存储
+                saveDiariesToLocalStorage();
+                
+                // 重新渲染日记列表
+                renderDiaries();
+                newDiaryActive = false;
+            }
+            
+            // 保存日记到本地存储
+            function saveDiariesToLocalStorage() {
+                localStorage.setItem('loveDiaries', JSON.stringify(diaries));
+                saveDiariesBtn.innerHTML = '保存成功 ✔';
+                
+                // 恢复按钮文本
+                setTimeout(() => {
+                    saveDiariesBtn.innerHTML = '保存日记';
+                }, 2000);
+            }
+            
+            // 保存日记按钮
+            saveDiariesBtn.addEventListener('click', saveDiariesToLocalStorage);
+        }
+
+        // ----------------- 初始化函数 -----------------
+        function init() {
+            // 加载音乐
+            const audio = document.getElementById('backgroundMusic');
+            audio.src = CONFIG.musicUrl;
+            
+            // 设置背景切换按钮
+            document.getElementById('bg-toggle').addEventListener('click', toggleMediaPlayer);
+            
+            // 设置视频控制按钮
+            document.getElementById('video-control').addEventListener('click', playNextMedia);
+            
+            // 设置音乐控制
+            setupMusicControl();
+
+            // 设置日记功能
+            setupDiaryFunctionality();
+
+            // 实时更新恋爱时长
+            updateLoveDays();
+            setInterval(updateLoveDays, 60000);
+            
+            // 如果有媒体列表，开始播放
+            if (CONFIG.mediaList.length > 0) {
+                isPlaying = true;
+                loadMedia(CONFIG.mediaList[mediaIndex]);
+            }
+        }
+
+        // 页面加载后运行
+        window.onload = init;
+    </script>
+</body>
+</html>    
