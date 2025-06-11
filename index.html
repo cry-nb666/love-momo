@@ -17,12 +17,12 @@
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            transition: background-image 1s ease; /* 背景切换过渡效果 */
+            transition: background-image 1s ease;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background-color: #000; /* 初始背景色 */
+            background-color: #000;
             overflow: hidden;
         }
 
@@ -384,6 +384,53 @@
                 width: 100%;
             }
         }
+        
+        /* 新增弹幕样式 */
+        #danmaku-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 500;
+            overflow: hidden;
+        }
+        
+        .danmaku {
+            position: absolute;
+            white-space: nowrap;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            opacity: 0.7;
+            user-select: none;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        @keyframes danmakuMove {
+            from { transform: translateX(100%); }
+            to { transform: translateX(-100%); }
+        }
+        
+        .danmaku-fast {
+            animation: danmakuMove 8s linear infinite;
+        }
+        
+        .danmaku-medium {
+            animation: danmakuMove 12s linear infinite;
+        }
+        
+        .danmaku-slow {
+            animation: danmakuMove 16s linear infinite;
+        }
+        
+        /* 响应式调整弹幕大小 */
+        @media (max-width: 768px) {
+            .danmaku {
+                font-size: 18px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -391,29 +438,29 @@
     <div id="video-container">
         <video id="background-video" autoplay muted loop playsinline>
             <source src="background.mp4" type="video/mp4">
-            <!-- 可替换为你的视频文件 -->
         </video>
     </div>
 
     <!-- 加载提示 -->
     <div id="loading-overlay">
         <div class="loader"></div>
-        <p>点击屏幕开始我们的回忆之旅</p>
+        <p>点击屏幕开启回忆</p>
     </div>
 
-    <!-- 顶部导航栏（可扩展功能按钮） -->
+    <!-- 顶部导航栏 -->
     <div class="nav-bar">
         <i class="nav-btn" id="music-toggle">🎵</i>
         <i class="nav-btn" id="openDiary">📔</i>
+        <i class="nav-btn" id="danmaku-toggle">💬</i>
     </div>
 
     <!-- 主内容区域 -->
     <div class="main-content">
-        <h1 class="title">✨ 专属我们的爱情 ✨</h1>
+        <h1 class="title">✨ LOVE 沫沫~ ~ ~ ✨</h1>
         <div class="countdown" id="loveDays">加载中...</div>
         <p class="subtitle">
-            每一分每一秒，<br>
-            都是我们 ❤️
+            每一分每一秒<br>
+            都是我们❤️
         </p>
     </div>
 
@@ -447,14 +494,16 @@
         </div>
     </div>
 
+    <!-- 弹幕容器 -->
+    <div id="danmaku-container"></div>
+
     <!-- 背景音乐播放器 -->
     <audio id="backgroundMusic" loop>
         <source src="特别的人 - 方大同.mp3" type="audio/mpeg">
-        <!-- 可替换为其他音乐平台外链，如网易云音乐/QQ音乐的外链 -->
     </audio>
 
     <script>
-        // 配置项 - 请务必修改以下内容！
+        // 配置项
         const CONFIG = {
             loveStartDate: '2024-06-18', // 恋爱开始日期（YYYY-MM-DD）
             mediaList: [
@@ -556,47 +605,116 @@
             musicUrl: '特别的人 - 方大同.mp3', // 音乐文件地址
             initialVolume: 0.7, // 初始音量 (0-1)
             defaultToMediaPlayer: true, // 默认使用媒体播放器
-            shuffleMedia: true // 随机播放媒体
+            shuffleMedia: true, // 随机播放媒体
+            
+            // 弹幕相关配置 - 大幅减少弹幕文案数量
+            danmakuTexts: [
+                "陈老师，你的朋友圈真好看~ ~ ~",
+                "你想要一个机会还是答案~",
+                "如果我说都要，会不会比较贪心呀",
+                "当然是要看哥哥怎么勾引我对我耍什么手段呀",
+                "嘿嘿嘿~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ " ,
+                "宝宝一周年快乐呀~ ~ ~ ~ ~  ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ",
+                "现在是6.11号我终于写到弹幕了，真是难死了",
+                "也不知道你看到会是什么心情嘞，嘿嘿嘿",
+                "开心吗！！！        惊喜吗！！！           崇拜我吗！！！         我厉害吗！！！        低调低调呀宝宝！！！",
+                "我简直太厉害了，这个是不是非常的小众！！！",
+                "别人都是什么纪念册，什么书啥的",
+                "遇到我这个网站，那些是不是都弱爆了！！！！！",
+                "嘿嘿嘿其实之前有想过做那个书，结果被syn抢先了",
+                "然后我就想怎么样能跟他那个不一样",
+                "然后我就想到，网站也可以是差不多的效果",
+                "而且比他们那些更厉害，还是动态的，更高级",
+                "而且不会跟他们那些撞，这就是全世界独一份",
+                "别人想要都没有嘿嘿嘿","你就偷着乐吧",
+                "反正全网我都没有看到",
+                "但是你现在看到的这个是我尝试了做跟纪念书差不多的，但是做出来会很丑",
+                "所以我就做了这个",
+                "嘻嘻嘻宝宝不要嫌弃哦，我会慢慢完善的",
+                "不会放任不管哒",
+                "OK呀不知道说啥啦，那就再说一下一周年快乐呀~",
+                "其实咱们的小日子还挺平稳的，虽然一出事就是大事嘻嘻嘻",
+                "所以就希望我们以后的爱情可以一帆风顺",
+                "而且我们之前学校的事情都平稳过下来了，那以后肯定一帆风顺",
+                "就希望我们以后可以少一点吵架，不要再相融之前",
+                "大晚上给我发完消息就直接拉黑删除一条龙",
+                "然后我以后也会乖乖的，不惹你生气啦~ ~ ~",
+                "当然啦，咱们呢，前段时间是因为很长时间不见面，加上学校的事情心烦",
+                "我觉得咱们后面肯定没有就不会啦对不对呀宝宝",
+                "咱们也马上放假啦，等你看到这个的时候我们肯定就放假啦",
+                "也不知道假期我们能不能出来玩~ ~ ~ ~ ~ ~ ~ ~ ~ ~",
+                "有点想约会~ ~ ~ ~ ~ ~ ",
+                "要是真的能约会，我记得可以去回顾下第一次见面的地，感觉太不错了呀",
+                "当时老害羞了，怪放不开的，你当时还压力我",
+                "瞪着我还，怪害怕的嘻嘻嘻",
+                "还有点害羞",
+                "现在再去就肯定不会啦，直接强吻你~ ~ ~ ~  ~",
+                "不知不觉就一周年了",
+                "时间过的好快哦",
+                "真的是不知不觉的",
+                "感觉昨天还在叫陈老师~ ~ ~ ~ ~",
+                "嘿嘿嘿，希望我们以后可以少一点争吵嘿嘿",
+                "希望我们的爱情，可以天长地久，永不分离",
+                "虽然和我们宝宝在一起，我觉得还是快乐多一点",
+                "但怕你因为吵架而有什么想法，所以我还是乖一点吧~ ~ ~",
+                "爱你哟宝宝~ ~ ~嘿嘿嘿嘿嘿嘿嘿"
+                
+            ],
+            danmakuInterval: 3000, // 弹幕出现间隔（毫秒）- 调整为5秒，避免过快
+            maxActiveDanmakus: 1, // 最大同时显示的弹幕数量-改为1条，确保顺序清晰
+            playDanmakuInOrder: true, // 新增配置：是否按顺序播放弹幕
         };
 
-        // 状态变量
-        let usingMediaPlayer = CONFIG.defaultToMediaPlayer;
-        let mediaIndex = 0;
-        let mediaChangeTimer = null;
-        let isPlaying = false;
-        let backgroundVideoLoaded = false; // 添加视频加载状态变量
+        // 全局变量
+        let currentMediaIndex = 0;
+        let mediaTimer;
+        let danmakuTimer;
+        let activeDanmakus = 0;
+        let isDanmakuEnabled = true;
+        let currentDanmakuIndex = 0; // 新增：当前弹幕索引
 
-        // ----------------- 工具函数 -----------------
-        // 格式化时间为 MM:SS
-        function formatTime(seconds) {
-            const minutes = Math.floor(seconds / 60);
-            const remainingSeconds = Math.floor(seconds % 60);
-            return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-        }
-
-        // 操作Cookie
-        function setCookie(name, value, days) {
-            let expires = "";
-            if (days) {
-                const date = new Date();
-                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                expires = "; expires=" + date.toUTCString();
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 计算恋爱天数
+            updateLoveDays();
+            
+            // 设置音乐
+            const audio = document.getElementById('backgroundMusic');
+            audio.volume = CONFIG.initialVolume;
+            
+            // 监听页面点击以解除移动端音频限制
+            document.addEventListener('click', function startAudio() {
+                if (audio.paused) {
+                    audio.play().catch(e => console.log('音频自动播放被阻止:', e));
+                }
+                document.removeEventListener('click', startAudio);
+            });
+            
+            // 初始化音乐播放器
+            initMusicPlayer();
+            
+            // 初始化媒体播放器
+            if (CONFIG.defaultToMediaPlayer && CONFIG.mediaList.length > 0) {
+                setupMediaPlayer();
             }
-            document.cookie = name + "=" + (value || "") + expires + "; path=/";
-        }
+            
+            // 初始化日记系统
+            loadDiaries();
+            
+            // 初始化弹幕系统
+            startDanmakuSystem();
+            
+            // 监听加载完成
+            window.addEventListener('load', function() {
+                setTimeout(function() {
+                    document.getElementById('loading-overlay').style.opacity = '0';
+                    setTimeout(function() {
+                        document.getElementById('loading-overlay').style.display = 'none';
+                    }, 500);
+                }, 1000);
+            });
+        });
 
-        function getCookie(name) {
-            const nameEQ = name + "=";
-            const ca = document.cookie.split(';');
-            for (let i = 0; i < ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-            }
-            return null;
-        }
-
-        // ----------------- 恋爱时长计算 -----------------
         function updateLoveDays() {
             const start = new Date(CONFIG.loveStartDate);
             const now = new Date();
@@ -607,427 +725,320 @@
             document.getElementById('loveDays').textContent = `我们已经在一起：${days}天 ${hours}小时 ${minutes}分钟`;
         }
 
-        // ----------------- 背景控制 -----------------
-        // 加载媒体（图片或视频）
-        function loadMedia(mediaItem) {
-            const videoContainer = document.getElementById('video-container');
-            const backgroundVideo = document.getElementById('background-video');
-            const body = document.body;
-            
-            // 隐藏当前媒体
-            if (mediaItem.type === 'video') {
-                // 视频背景
-                videoContainer.style.opacity = '0';
-                body.style.backgroundImage = 'none';
-                
-                // 重置视频
-                backgroundVideo.pause();
-                backgroundVideo.src = mediaItem.src;
-                backgroundVideo.load();
-                
-                // 视频加载完成后显示
-                backgroundVideo.addEventListener('canplay', () => {
-                    backgroundVideoLoaded = true;
-                    if (usingMediaPlayer && isPlaying) {
-                        videoContainer.style.opacity = '1';
-                        backgroundVideo.play().catch(e => console.log('视频自动播放失败:', e));
-                        
-                        // 设置下一个媒体切换时间
-                        setupMediaChangeTimer(mediaItem.duration);
-                    }
-                }, { once: true });
-                
-                // 视频加载错误时回退到下一个媒体
-                backgroundVideo.addEventListener('error', () => {
-                    console.error('视频加载失败，加载下一个媒体');
-                    playNextMedia();
-                }, { once: true });
-            } else {
-                // 图片背景
-                videoContainer.style.opacity = '0';
-                body.style.backgroundImage = `url('${mediaItem.src}')`;
-                
-                // 设置下一个媒体切换时间
-                setupMediaChangeTimer(mediaItem.duration);
-            }
-        }
-
-        // 设置媒体切换计时器
-        function setupMediaChangeTimer(duration) {
-            if (mediaChangeTimer) {
-                clearInterval(mediaChangeTimer);
-            }
-            
-            mediaChangeTimer = setInterval(playNextMedia, duration);
-        }
-
-        // 播放下一个媒体
-        function playNextMedia() {
-            if (CONFIG.mediaList.length === 0) return;
-            
-            // 选择下一个媒体
-            if (CONFIG.shuffleMedia) {
-                mediaIndex = Math.floor(Math.random() * CONFIG.mediaList.length);
-            } else {
-                mediaIndex = (mediaIndex + 1) % CONFIG.mediaList.length;
-            }
-            
-            // 加载新媒体
-            loadMedia(CONFIG.mediaList[mediaIndex]);
-        }
-
-        // 切换媒体播放器状态
-        function toggleMediaPlayer() {
-            usingMediaPlayer = !usingMediaPlayer;
-            
-            if (usingMediaPlayer) {
-                // 启用媒体播放器
-                document.getElementById('bg-toggle').textContent = '关闭背景';
-                
-                // 如果有媒体列表，开始播放
-                if (CONFIG.mediaList.length > 0) {
-                    isPlaying = true;
-                    loadMedia(CONFIG.mediaList[mediaIndex]);
-                }
-            } else {
-                // 关闭媒体播放器
-                document.getElementById('bg-toggle').textContent = '打开背景';
-                
-                // 停止当前播放
-                isPlaying = false;
-                if (mediaChangeTimer) {
-                    clearInterval(mediaChangeTimer);
-                }
-                
-                // 显示默认背景
-                const body = document.body;
-                body.style.backgroundImage = '';
-                body.style.backgroundColor = '#000';
-            }
-        }
-
-        // ----------------- 音乐控制 -----------------
-        function setupMusicControl() {
+        
+        // 初始化音乐播放器
+        function initMusicPlayer() {
             const audio = document.getElementById('backgroundMusic');
             const musicIcon = document.getElementById('music-icon');
-            const musicProgress = document.getElementById('music-progress');
             const progressBar = document.getElementById('progress-bar');
             const timeDisplay = document.getElementById('time-display');
+            const musicProgress = document.getElementById('music-progress');
             
-            // 设置音量
-            audio.volume = CONFIG.initialVolume;
-            
-            // 检查用户之前的音乐偏好
-            const musicPreference = getCookie('music_preference');
-            if (musicPreference === 'mute') {
-                audio.muted = true;
-                musicIcon.textContent = '🔇';
-            }
-            
-            // 尝试自动播放音乐
-            function tryPlayMusic() {
-                audio.play().then(() => {
-                    // 播放成功
-                    musicIcon.textContent = '🔊';
-                    hideLoadingOverlay();
-                }).catch(e => {
-                    console.log('自动播放失败:', e);
-                    // 显示加载提示，等待用户交互
-                    document.getElementById('loading-overlay').querySelector('p').textContent = '点击屏幕播放音乐';
-                });
-            }
-            
-            // 用户首次交互时播放音乐和视频
-            function handleFirstInteraction() {
+            // 音乐播放/暂停切换
+            musicIcon.addEventListener('click', function() {
                 if (audio.paused) {
-                    tryPlayMusic();
-                    // 首次交互时也尝试播放视频
-                    const backgroundVideo = document.getElementById('background-video');
-                    if (usingMediaPlayer && backgroundVideo.paused && backgroundVideoLoaded) {
-                        backgroundVideo.play().catch(e => console.log('视频自动播放失败:', e));
-                    }
-                }
-                // 移除事件监听器，避免重复触发
-                document.removeEventListener('click', handleFirstInteraction);
-                document.removeEventListener('touchstart', handleFirstInteraction);
-            }
-            
-            // 添加首次交互监听器
-            document.addEventListener('click', handleFirstInteraction);
-            document.addEventListener('touchstart', handleFirstInteraction);
-            
-            // 音乐控制按钮点击事件
-            musicIcon.addEventListener('click', () => {
-                if (audio.paused) {
-                    audio.play();
-                    musicIcon.textContent = '🔊';
-                    setCookie('music_preference', 'play', 365);
+                    audio.play().catch(e => console.log('音频播放被阻止:', e));
+                    musicIcon.textContent = '⏸️';
                 } else {
                     audio.pause();
-                    musicIcon.textContent = '⏸️';
-                    setCookie('music_preference', 'pause', 365);
+                    musicIcon.textContent = '▶️';
                 }
             });
             
-            // 静音/取消静音
-            document.getElementById('music-toggle').addEventListener('click', () => {
-                audio.muted = !audio.muted;
-                if (audio.muted) {
-                    musicIcon.textContent = '🔇';
-                    setCookie('music_preference', 'mute', 365);
+            // 更新进度条
+            audio.addEventListener('timeupdate', function() {
+                const percent = (audio.currentTime / audio.duration) * 100;
+                progressBar.style.width = percent + '%';
+                
+                // 更新时间显示
+                const currentMinutes = Math.floor(audio.currentTime / 60);
+                const currentSeconds = Math.floor(audio.currentTime % 60);
+                const durationMinutes = Math.floor(audio.duration / 60);
+                const durationSeconds = Math.floor(audio.duration % 60);
+                
+                timeDisplay.textContent = `${padZero(currentMinutes)}:${padZero(currentSeconds)} / ${padZero(durationMinutes)}:${padZero(durationSeconds)}`;
+            });
+            
+            // 点击进度条跳转到指定位置
+            musicProgress.addEventListener('click', function(e) {
+                const rect = musicProgress.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                audio.currentTime = pos * audio.duration;
+            });
+            
+            // 格式化时间（添加前导零）
+            function padZero(num) {
+                return num < 10 ? '0' + num : num;
+            }
+        }
+
+        // 设置媒体播放器
+        function setupMediaPlayer() {
+            const videoContainer = document.getElementById('video-container');
+            const backgroundVideo = document.getElementById('background-video');
+            const bgToggle = document.getElementById('bg-toggle');
+            const videoControl = document.getElementById('video-control');
+            
+            // 随机排序媒体列表
+            if (CONFIG.shuffleMedia) {
+                CONFIG.mediaList.sort(() => Math.random() - 0.5);
+            }
+            
+            // 显示第一个媒体
+            displayMedia(0);
+            
+            // 背景切换按钮
+            bgToggle.addEventListener('click', function() {
+                if (videoContainer.style.opacity === '0' || videoContainer.style.opacity === '') {
+                    videoContainer.style.opacity = '1';
+                    bgToggle.textContent = '关闭背景';
                 } else {
-                    musicIcon.textContent = '🔊';
-                    setCookie('music_preference', 'unmute', 365);
+                    videoContainer.style.opacity = '0';
+                    bgToggle.textContent = '打开背景';
                 }
             });
             
-            // 更新进度条和时间显示
-            audio.addEventListener('timeupdate', () => {
-                const progress = (audio.currentTime / audio.duration) * 100;
-                progressBar.style.width = `${progress}%`;
-                timeDisplay.textContent = formatTime(audio.currentTime);
-            });
-            
-            // 点击进度条跳转
-            musicProgress.addEventListener('click', (e) => {
-                const progressWidth = musicProgress.clientWidth;
-                const clickPosition = e.offsetX;
-                const seekTime = (clickPosition / progressWidth) * audio.duration;
-                audio.currentTime = seekTime;
-            });
-            
-            // 音乐加载完成
-            audio.addEventListener('loadedmetadata', () => {
-                timeDisplay.textContent = formatTime(audio.currentTime);
-            });
-            
-            // 监听音乐播放状态更新按钮图标
-            audio.addEventListener('play', () => {
-                musicIcon.textContent = '🔊';
-            });
-            
-            audio.addEventListener('pause', () => {
-                musicIcon.textContent = '⏸️';
+            // 下一个媒体按钮
+            videoControl.addEventListener('click', function() {
+                currentMediaIndex = (currentMediaIndex + 1) % CONFIG.mediaList.length;
+                displayMedia(currentMediaIndex);
             });
         }
 
-        // ----------------- 加载覆盖层控制 -----------------
-        function hideLoadingOverlay() {
-            const loadingOverlay = document.getElementById('loading-overlay');
-            loadingOverlay.style.opacity = '0';
-            setTimeout(() => {
-                loadingOverlay.style.display = 'none';
-            }, 500);
+        // 显示指定索引的媒体
+        function displayMedia(index) {
+            const media = CONFIG.mediaList[index];
+            const videoContainer = document.getElementById('video-container');
+            const backgroundVideo = document.getElementById('background-video');
+            
+            // 清除之前的计时器
+            if (mediaTimer) {
+                clearTimeout(mediaTimer);
+            }
+            
+            if (media.type === 'video') {
+                // 显示视频
+                backgroundVideo.src = media.src;
+                backgroundVideo.load();
+                backgroundVideo.play();
+                
+                // 视频播放结束后自动切换到下一个
+                backgroundVideo.onended = function() {
+                    currentMediaIndex = (currentMediaIndex + 1) % CONFIG.mediaList.length;
+                    displayMedia(currentMediaIndex);
+                };
+                
+                videoContainer.style.opacity = '1';
+            } else if (media.type === 'image') {
+                // 显示图片
+                const img = new Image();
+                img.onload = function() {
+                    // 创建一个临时元素来显示图片
+                    const imgElement = document.createElement('div');
+                    imgElement.style.backgroundImage = `url('${media.src}')`;
+                    imgElement.style.backgroundSize = 'cover';
+                    imgElement.style.backgroundPosition = 'center';
+                    imgElement.style.position = 'absolute';
+                    imgElement.style.top = '0';
+                    imgElement.style.left = '0';
+                    imgElement.style.width = '100%';
+                    imgElement.style.height = '100%';
+                    
+                    // 替换视频容器内容
+                    while (videoContainer.firstChild) {
+                        videoContainer.removeChild(videoContainer.firstChild);
+                    }
+                    videoContainer.appendChild(imgElement);
+                    videoContainer.style.opacity = '1';
+                    
+                    // 设置计时器切换到下一个媒体
+                    mediaTimer = setTimeout(function() {
+                        currentMediaIndex = (currentMediaIndex + 1) % CONFIG.mediaList.length;
+                        displayMedia(currentMediaIndex);
+                    }, media.duration);
+                };
+                img.src = media.src;
+            }
         }
 
-        // ----------------- 日记功能实现 -----------------
-        function setupDiaryFunctionality() {
-            const diaryModal = document.getElementById('diary-modal');
-            const closeModal = document.querySelector('.close-modal');
-            const openDiaryBtn = document.getElementById('openDiary');
+        // 初始化日记系统
+        function loadDiaries() {
             const diaryEntries = document.getElementById('diary-entries');
             const addDiaryBtn = document.getElementById('add-diary');
             const saveDiariesBtn = document.getElementById('save-diaries');
+            const diaryModal = document.getElementById('diary-modal');
+            const openDiaryBtn = document.getElementById('openDiary');
+            const closeModal = document.querySelector('.close-modal');
             
-            // 初始日记数据（可从本地存储加载）
-            let diaries = JSON.parse(localStorage.getItem('loveDiaries')) || [
-                {
-                    date: '2025-06-09',
-                    content: '今天是周一，前两天突发奇想（大概是3号），想给我们做一个网站（其实也不是突发奇想，我之前就有想到过，用独特的方式记录一下我们）那为什么是今天才开始有日记呢，那是因为今天才把网站的框架搭好嘻嘻嘻'
-                },
-                {
-                    date: '2025-06-10',
-                    content: '今天是周二，我们今天考试了，嘻嘻嘻嘻嘻有点没亲够，还想亲亲~，咱们今天还说马上一周年，我们该咋过呀，我也在思考，嘤嘤嘤，我也不知道咋过，都不知道能不能见面嘞'
-                },
-                
-            ];
+            // 从本地存储加载日记
+            let diaries = JSON.parse(localStorage.getItem('loveDiaries')) || [];
             
             // 渲染日记列表
-            function renderDiaries() {
-                diaryEntries.innerHTML = '';
-                
-                if (diaries.length === 0) {
-                    diaryEntries.innerHTML = '<p>还没有日记记录哦，点击"添加新日记"按钮开始记录吧~</p>';
-                    return;
-                }
-                
-                diaries.forEach((diary, index) => {
-                    const entryElement = document.createElement('div');
-                    entryElement.className = 'diary-entry';
-                    entryElement.innerHTML = `
-                        <div class="delete-diary" data-index="${index}">❌</div>
-                        <div class="diary-date">${formatDate(diary.date)}</div>
-                        <div class="diary-content">${diary.content}</div>
-                    `;
-                    diaryEntries.appendChild(entryElement);
-                });
-                
-                // 添加删除按钮事件
-                document.querySelectorAll('.delete-diary').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const index = parseInt(e.target.getAttribute('data-index'));
-                        deleteDiary(index);
-                    });
-                });
-            }
+            renderDiaries(diaries);
             
-            // 删除日记
-            function deleteDiary(index) {
-                if (confirm('确定要删除这篇日记吗？')) {
-                    diaries.splice(index, 1);
-                    saveDiariesToLocalStorage();
-                    renderDiaries();
-                }
-            }
-            
-            // 格式化日期
-            function formatDate(dateString) {
-                const date = new Date(dateString);
-                const year = date.getFullYear();
-                const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                const day = date.getDate().toString().padStart(2, '0');
-                const weekMap = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-                const weekDay = weekMap[date.getDay()];
-                return `${year}年${month}月${day}日 ${weekDay}`;
-            }
-            
-            // 打开日记弹窗
-            openDiaryBtn.addEventListener('click', () => {
-                renderDiaries();
+            // 打开日记模态框
+            openDiaryBtn.addEventListener('click', function() {
                 diaryModal.style.display = 'flex';
-                document.body.style.overflow = 'hidden'; // 防止背景滚动
             });
             
-            // 关闭日记弹窗
-            function closeDiaryModal() {
+            // 关闭日记模态框
+            closeModal.addEventListener('click', function() {
                 diaryModal.style.display = 'none';
-                document.body.style.overflow = ''; // 恢复背景滚动
-            }
+            });
             
-            closeModal.addEventListener('click', closeDiaryModal);
-            
-            // 点击弹窗背景关闭
-            diaryModal.addEventListener('click', (e) => {
+            // 点击模态框外部关闭
+            diaryModal.addEventListener('click', function(e) {
                 if (e.target === diaryModal) {
-                    closeDiaryModal();
+                    diaryModal.style.display = 'none';
                 }
             });
             
             // 添加新日记
-            let newDiaryActive = false;
-            addDiaryBtn.addEventListener('click', () => {
-                if (newDiaryActive) {
-                    // 已有新建日记表单，提交当前表单
-                    saveCurrentDiary();
-                } else {
-                    // 创建新建日记表单
-                    const today = new Date();
-                    const year = today.getFullYear();
-                    const month = (today.getMonth() + 1).toString().padStart(2, '0');
-                    const day = today.getDate().toString().padStart(2, '0');
-                    const newDiaryDate = `${year}-${month}-${day}`;
-                    
-                    const newDiaryForm = document.createElement('div');
-                    newDiaryForm.className = 'new-diary';
-                    newDiaryForm.innerHTML = `
-                        <div class="diary-date">${formatDate(newDiaryDate)}</div>
-                        <textarea placeholder="写下今天的故事..."></textarea>
-                        <div style="display: flex; gap: 10px; margin-top: 10px;">
-                            <button id="save-new-diary">保存日记</button>
-                            <button id="cancel-new-diary">取消</button>
-                        </div>
-                    `;
-                    diaryEntries.appendChild(newDiaryForm);
-                    
-                    newDiaryActive = true;
-                    
-                    // 添加保存和取消按钮事件
-                    document.getElementById('save-new-diary').addEventListener('click', saveCurrentDiary);
-                    document.getElementById('cancel-new-diary').addEventListener('click', () => {
-                        newDiaryActive = false;
-                        diaryEntries.removeChild(newDiaryForm);
-                    });
-                }
-            });
-            
-            // 保存当前新建的日记
-            function saveCurrentDiary() {
-                const textarea = document.querySelector('.new-diary textarea');
-                if (!textarea) return;
+            addDiaryBtn.addEventListener('click', function() {
+                const newDiaryDiv = document.createElement('div');
+                newDiaryDiv.className = 'new-diary';
+                newDiaryDiv.innerHTML = `
+                    <div class="diary-date">今天</div>
+                    <textarea placeholder="写下今天的感受..."></textarea>
+                    <button class="save-diary">保存</button>
+                    <button class="cancel-diary">取消</button>
+                `;
                 
-                const content = textarea.value.trim();
-                if (content === '') {
-                    alert('日记内容不能为空');
-                    return;
-                }
+                diaryEntries.appendChild(newDiaryDiv);
                 
-                const dateElement = document.querySelector('.new-diary .diary-date');
-                const dateText = dateElement.textContent;
-                const dateMatch = dateText.match(/(\d{4})年(\d{2})月(\d{2})日/);
-                if (!dateMatch) return;
-                
-                const date = `${dateMatch[1]}-${dateMatch[2]}-${dateMatch[3]}`;
-                
-                // 添加到日记数组
-                diaries.push({
-                    date: date,
-                    content: content
+                // 保存新日记
+                newDiaryDiv.querySelector('.save-diary').addEventListener('click', function() {
+                    const content = newDiaryDiv.querySelector('textarea').value;
+                    if (content.trim()) {
+                        const newDiary = {
+                            date: new Date().toLocaleDateString(),
+                            content: content
+                        };
+                        
+                        diaries.unshift(newDiary); // 添加到数组开头
+                        renderDiaries(diaries);
+                        saveDiaries(diaries);
+                    }
+                    diaryEntries.removeChild(newDiaryDiv);
                 });
                 
-                // 保存到本地存储
-                saveDiariesToLocalStorage();
+                // 取消添加
+                newDiaryDiv.querySelector('.cancel-diary').addEventListener('click', function() {
+                    diaryEntries.removeChild(newDiaryDiv);
+                });
+            });
+            
+            // 保存所有日记
+            saveDiariesBtn.addEventListener('click', function() {
+                saveDiaries(diaries);
+            });
+            
+            // 渲染日记列表
+            function renderDiaries(diaries) {
+                diaryEntries.innerHTML = '';
                 
-                // 重新渲染日记列表
-                renderDiaries();
-                newDiaryActive = false;
+                diaries.forEach(function(diary, index) {
+                    const entryDiv = document.createElement('div');
+                    entryDiv.className = 'diary-entry';
+                    entryDiv.innerHTML = `
+                        <div class="diary-date">${diary.date}</div>
+                        <div class="diary-content">${diary.content}</div>
+                        <span class="delete-diary" data-index="${index}">❌</span>
+                    `;
+                    
+                    diaryEntries.appendChild(entryDiv);
+                    
+                    // 删除日记
+                    entryDiv.querySelector('.delete-diary').addEventListener('click', function() {
+                        if (confirm('确定要删除这篇日记吗？')) {
+                            diaries.splice(index, 1);
+                            renderDiaries(diaries);
+                            saveDiaries(diaries);
+                        }
+                    });
+                });
             }
             
             // 保存日记到本地存储
-            function saveDiariesToLocalStorage() {
+            function saveDiaries(diaries) {
                 localStorage.setItem('loveDiaries', JSON.stringify(diaries));
-                saveDiariesBtn.innerHTML = '保存成功 ✔';
+                alert('日记已保存');
+            }
+        }
+
+        // 弹幕系统
+        function startDanmakuSystem() {
+            const danmakuContainer = document.getElementById('danmaku-container');
+            const danmakuToggle = document.getElementById('danmaku-toggle');
+            
+            // 切换弹幕开关
+            danmakuToggle.addEventListener('click', function() {
+                isDanmakuEnabled = !isDanmakuEnabled;
+                danmakuToggle.textContent = isDanmakuEnabled ? '💬' : '❌';
                 
-                // 恢复按钮文本
-                setTimeout(() => {
-                    saveDiariesBtn.innerHTML = '保存日记';
-                }, 2000);
+                if (isDanmakuEnabled) {
+                    startDanmakuTimer();
+                } else {
+                    clearTimeout(danmakuTimer);
+                    // 清除所有现有弹幕
+                    while (danmakuContainer.firstChild) {
+                        danmakuContainer.removeChild(danmakuContainer.firstChild);
+                    }
+                    activeDanmakus = 0;
+                }
+            });
+            
+            // 开始弹幕计时器
+            startDanmakuTimer();
+            
+            function startDanmakuTimer() {
+                if (isDanmakuEnabled) {
+                    danmakuTimer = setTimeout(createDanmaku, CONFIG.danmakuInterval);
+                }
             }
             
-            // 保存日记按钮
-            saveDiariesBtn.addEventListener('click', saveDiariesToLocalStorage);
-        }
-
-        // ----------------- 初始化函数 -----------------
-        function init() {
-            // 加载音乐
-            const audio = document.getElementById('backgroundMusic');
-            audio.src = CONFIG.musicUrl;
-            
-            // 设置背景切换按钮
-            document.getElementById('bg-toggle').addEventListener('click', toggleMediaPlayer);
-            
-            // 设置视频控制按钮
-            document.getElementById('video-control').addEventListener('click', playNextMedia);
-            
-            // 设置音乐控制
-            setupMusicControl();
-
-            // 设置日记功能
-            setupDiaryFunctionality();
-
-            // 实时更新恋爱时长
-            updateLoveDays();
-            setInterval(updateLoveDays, 60000);
-            
-            // 如果有媒体列表，开始播放
-            if (CONFIG.mediaList.length > 0) {
-                isPlaying = true;
-                loadMedia(CONFIG.mediaList[mediaIndex]);
+            // 创建弹幕
+            function createDanmaku() {
+                if (!isDanmakuEnabled || activeDanmakus >= CONFIG.maxActiveDanmakus) {
+                    startDanmakuTimer();
+                    return;
+                }
+                
+                // 按顺序获取弹幕文本（修改为顺序模式）
+                let text = CONFIG.danmakuTexts[currentDanmakuIndex];
+                currentDanmakuIndex = (currentDanmakuIndex + 1) % CONFIG.danmakuTexts.length; // 循环索引
+                
+                // 创建弹幕元素
+                const danmaku = document.createElement('div');
+                danmaku.className = 'danmaku';
+                danmaku.textContent = text;
+                
+                // 随机选择速度和位置
+                const speeds = ['fast', 'medium', 'slow'];
+                const randomSpeed = speeds[Math.floor(Math.random() * speeds.length)];
+                danmaku.classList.add(`danmaku-${randomSpeed}`);
+                
+                // 随机垂直位置（避开顶部导航和底部播放器）
+                const topPosition = Math.floor(Math.random() * 70) + 15; // 15% 到 85% 之间
+                danmaku.style.top = `${topPosition}%`;
+                
+                // 添加到容器
+                danmakuContainer.appendChild(danmaku);
+                activeDanmakus++;
+                
+                // 设置弹幕消失
+                const duration = randomSpeed === 'fast' ? 8000 : randomSpeed === 'medium' ? 12000 : 16000;
+                setTimeout(function() {
+                    if (danmaku.parentNode === danmakuContainer) {
+                        danmakuContainer.removeChild(danmaku);
+                        activeDanmakus--;
+                    }
+                }, duration);
+                
+                // 继续创建下一条弹幕
+                startDanmakuTimer();
             }
         }
-
-        // 页面加载后运行
-        window.onload = init;
     </script>
 </body>
-</html>    
+</html>
