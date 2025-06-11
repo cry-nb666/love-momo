@@ -449,7 +449,7 @@
 
     <!-- 顶部导航栏 -->
     <div class="nav-bar">
-        <i class="nav-btn" id="music-toggle">🎵</i>
+        
         <i class="nav-btn" id="openDiary">📔</i>
         <i class="nav-btn" id="danmaku-toggle">💬</i>
     </div>
@@ -861,6 +861,8 @@
             }
         }
 
+        
+
         // 初始化日记系统
         function loadDiaries() {
             const diaryEntries = document.getElementById('diary-entries');
@@ -870,8 +872,26 @@
             const openDiaryBtn = document.getElementById('openDiary');
             const closeModal = document.querySelector('.close-modal');
             
+
+            // 初始日记数据（可从本地存储加载）
+        let diaries = JSON.parse(localStorage.getItem('loveDiaries')) || [
+                {
+                    date: '2025-06-09',
+                    content: '今天是周一，前两天突发奇想（大概是3号），想给我们做一个网站（其实也不是突发奇想，我之前就有想到过，用独特的方式记录一下我们）那为什么是今天才开始有日记呢，那是因为今天才把网站的框架搭好嘻嘻嘻'
+                },
+                {
+                    date: '2025-06-10',
+                    content: '今天是周二，我们今天考试了，嘻嘻嘻嘻嘻有点没亲够，还想亲亲~，咱们今天还说马上一周年，我们该咋过呀，我也在思考，嘤嘤嘤，我也不知道咋过，都不知道能不能见面嘞'
+                },
+                {
+                    date: '2025-06-11',
+                    content: '今天是周三，我们今天又考试了，今天还是想亲亲~ ~ ~，今天考试你像小傻蛋怪可爱的嘞，但是最后你还白眼我让我好心寒哦，现在是晚自习，我在思考什么时候把网站告诉你 给你看，是周五还是18号呢，好纠结'
+                },
+
+            ];
+
             // 从本地存储加载日记
-            let diaries = JSON.parse(localStorage.getItem('loveDiaries')) || [];
+            // let diaries = JSON.parse(localStorage.getItem('loveDiaries')) || [];
             
             // 渲染日记列表
             renderDiaries(diaries);
