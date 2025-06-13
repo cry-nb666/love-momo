@@ -26,8 +26,8 @@
             overflow: hidden;
         }
 
-        /* 视频背景容器 */
-        #video-container {
+        /* 媒体容器 */
+        #media-container {
             position: fixed;
             top: 0;
             left: 0;
@@ -35,18 +35,20 @@
             height: 100%;
             z-index: 0;
             overflow: hidden;
-            opacity: 0;
+            opacity: 1;
             transition: opacity 1s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        #background-video {
+        #media-container img,
+        #media-container video {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            min-width: 100%;
-            min-height: 100%;
             object-fit: cover;
+            width: 100%;
+            height: 100%;
+            transition: opacity 1s ease;
         }
 
         /* 顶部导航栏 */
@@ -225,7 +227,7 @@
         }
 
         /* 视频控制按钮 */
-        #video-control {
+        #media-control {
             position: fixed;
             bottom: 20px;
             right: 160px;
@@ -239,8 +241,21 @@
             transition: all 0.3s ease;
         }
 
-        #video-control:hover {
+        #media-control:hover {
             background-color: rgba(0,0,0,0.8);
+        }
+
+        /* 媒体信息显示 */
+        #media-info {
+            position: fixed;
+            bottom: 70px;
+            left: 20px;
+            z-index: 1000;
+            background-color: rgba(0,0,0,0.5);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 14px;
         }
 
         /* 模态框样式 */
@@ -369,7 +384,8 @@
             #music-player { padding: 8px 15px; gap: 10px; }
             #time-display { display: none; }
             #bg-toggle { bottom: 80px; right: 20px; }
-            #video-control { bottom: 120px; right: 20px; }
+            #media-control { bottom: 120px; right: 20px; }
+            #media-info { bottom: 160px; left: 50%; transform: translateX(-50%); }
             
             .modal-content {
                 width: 95%;
@@ -434,12 +450,13 @@
     </style>
 </head>
 <body>
-    <!-- 视频背景容器 -->
-    <div id="video-container">
-        <video id="background-video" autoplay muted loop playsinline>
-            <source src="background.mp4" type="video/mp4">
-        </video>
+    <!-- 媒体容器 -->
+    <div id="media-container">
+        <!-- 图片和视频将在这里动态加载 -->
     </div>
+
+    <!-- 媒体信息显示 -->
+    <div id="media-info">第 <span id="current-index">1</span> / <span id="total-media">0</span></div>
 
     <!-- 加载提示 -->
     <div id="loading-overlay">
@@ -449,7 +466,6 @@
 
     <!-- 顶部导航栏 -->
     <div class="nav-bar">
-        
         <i class="nav-btn" id="openDiary">📔</i>
         <i class="nav-btn" id="danmaku-toggle">💬</i>
     </div>
@@ -473,11 +489,11 @@
         <div id="time-display">00:00</div>
     </div>
 
-    <!-- 视频/图片切换按钮 -->
+    <!-- 背景切换按钮 -->
     <div id="bg-toggle">关闭背景</div>
     
-    <!-- 视频控制按钮 -->
-    <div id="video-control">下一个</div>
+    <!-- 媒体控制按钮 -->
+    <div id="media-control">下一个</div>
 
     <!-- 日记弹窗 -->
     <div id="diary-modal" class="modal">
@@ -586,6 +602,12 @@
                 {type: 'image', src: '76.jpg', duration: 5000},
                 {type: 'image', src: '77.jpg', duration: 5000},
                 {type: 'image', src: '78.jpg', duration: 5000},
+                {type: 'image', src: '79.jpg', duration: 5000},
+                {type: 'image', src: '80.jpg', duration: 5000},
+                {type: 'image', src: '81.jpg', duration: 5000},
+                {type: 'image', src: '82.jpg', duration: 5000},
+                {type: 'image', src: '83.jpg', duration: 5000},
+                {type: 'image', src: '84.jpg', duration: 5000},
                 
 
                 {type: 'video', src: '1.mp4', duration: 12000},
@@ -599,12 +621,18 @@
                 {type: 'video', src: '9.mp4', duration: 12000},
                 {type: 'video', src: '10.mp4', duration: 12000},
                 {type: 'video', src: '11.mp4', duration: 12000},
+                {type: 'video', src: '12.mp4', duration: 12000},
+                {type: 'video', src: '13.mp4', duration: 12000},
+                {type: 'video', src: '14.mp4', duration: 12000},
+                {type: 'video', src: '15.mp4', duration: 12000},
+                {type: 'video', src: '16.mp4', duration: 12000},
+                {type: 'video', src: '17.mp4', duration: 12000},
+                {type: 'video', src: '18.mp4', duration: 12000},
                 
                 // 继续添加更多媒体...
             ],
             musicUrl: '特别的人 - 方大同.mp3', // 音乐文件地址
             initialVolume: 0.7, // 初始音量 (0-1)
-            defaultToMediaPlayer: true, // 默认使用媒体播放器
             shuffleMedia: true, // 随机播放媒体
             
             // 弹幕相关配置 - 大幅减少弹幕文案数量
@@ -694,7 +722,7 @@
             initMusicPlayer();
             
             // 初始化媒体播放器
-            if (CONFIG.defaultToMediaPlayer && CONFIG.mediaList.length > 0) {
+            if (CONFIG.mediaList.length > 0) {
                 setupMediaPlayer();
             }
             
@@ -713,6 +741,9 @@
                     }, 500);
                 }, 1000);
             });
+            
+            // 更新媒体总数显示
+            document.getElementById('total-media').textContent = CONFIG.mediaList.length;
         });
 
         function updateLoveDays() {
@@ -774,10 +805,9 @@
 
         // 设置媒体播放器
         function setupMediaPlayer() {
-            const videoContainer = document.getElementById('video-container');
-            const backgroundVideo = document.getElementById('background-video');
+            const mediaContainer = document.getElementById('media-container');
             const bgToggle = document.getElementById('bg-toggle');
-            const videoControl = document.getElementById('video-control');
+            const mediaControl = document.getElementById('media-control');
             
             // 随机排序媒体列表
             if (CONFIG.shuffleMedia) {
@@ -789,17 +819,17 @@
             
             // 背景切换按钮
             bgToggle.addEventListener('click', function() {
-                if (videoContainer.style.opacity === '0' || videoContainer.style.opacity === '') {
-                    videoContainer.style.opacity = '1';
+                if (mediaContainer.style.opacity === '0' || mediaContainer.style.opacity === '') {
+                    mediaContainer.style.opacity = '1';
                     bgToggle.textContent = '关闭背景';
                 } else {
-                    videoContainer.style.opacity = '0';
+                    mediaContainer.style.opacity = '0';
                     bgToggle.textContent = '打开背景';
                 }
             });
             
             // 下一个媒体按钮
-            videoControl.addEventListener('click', function() {
+            mediaControl.addEventListener('click', function() {
                 currentMediaIndex = (currentMediaIndex + 1) % CONFIG.mediaList.length;
                 displayMedia(currentMediaIndex);
             });
@@ -808,48 +838,59 @@
         // 显示指定索引的媒体
         function displayMedia(index) {
             const media = CONFIG.mediaList[index];
-            const videoContainer = document.getElementById('video-container');
-            const backgroundVideo = document.getElementById('background-video');
+            const mediaContainer = document.getElementById('media-container');
             
-            // 清除之前的计时器
+            // 更新当前媒体索引显示
+            document.getElementById('current-index').textContent = index + 1;
+            
+            // 清除之前的计时器和媒体元素
             if (mediaTimer) {
                 clearTimeout(mediaTimer);
             }
             
+            // 移除现有的媒体元素
+            while (mediaContainer.firstChild) {
+                mediaContainer.removeChild(mediaContainer.firstChild);
+            }
+            
             if (media.type === 'video') {
-                // 显示视频
-                backgroundVideo.src = media.src;
-                backgroundVideo.load();
-                backgroundVideo.play();
+                // 创建视频元素
+                const video = document.createElement('video');
+                video.autoplay = true;
+                video.muted = true;
+                video.playsinline = true;
+                video.src = media.src;
+                video.style.opacity = '0';
+                video.style.transition = 'opacity 1s ease'; 
+                
+                mediaContainer.appendChild(video);
+                
+                // 视频加载后淡入
+                video.addEventListener('loadeddata', function() {
+                    video.style.opacity = '1';
+                });
                 
                 // 视频播放结束后自动切换到下一个
-                backgroundVideo.onended = function() {
+                video.addEventListener('ended', function() {
                     currentMediaIndex = (currentMediaIndex + 1) % CONFIG.mediaList.length;
                     displayMedia(currentMediaIndex);
-                };
+                });
                 
-                videoContainer.style.opacity = '1';
+                // 播放视频
+                video.play().catch(e => console.log('视频播放失败:', e));
+                
             } else if (media.type === 'image') {
-                // 显示图片
-                const img = new Image();
+                // 创建图片元素
+                const img = document.createElement('img');
+                img.src = media.src;
+                img.style.opacity = '0';
+                img.style.transition = 'opacity 1s ease';
+                
+                mediaContainer.appendChild(img);
+                
+                // 图片加载后淡入
                 img.onload = function() {
-                    // 创建一个临时元素来显示图片
-                    const imgElement = document.createElement('div');
-                    imgElement.style.backgroundImage = `url('${media.src}')`;
-                    imgElement.style.backgroundSize = 'cover';
-                    imgElement.style.backgroundPosition = 'center';
-                    imgElement.style.position = 'absolute';
-                    imgElement.style.top = '0';
-                    imgElement.style.left = '0';
-                    imgElement.style.width = '100%';
-                    imgElement.style.height = '100%';
-                    
-                    // 替换视频容器内容
-                    while (videoContainer.firstChild) {
-                        videoContainer.removeChild(videoContainer.firstChild);
-                    }
-                    videoContainer.appendChild(imgElement);
-                    videoContainer.style.opacity = '1';
+                    img.style.opacity = '1';
                     
                     // 设置计时器切换到下一个媒体
                     mediaTimer = setTimeout(function() {
@@ -857,11 +898,8 @@
                         displayMedia(currentMediaIndex);
                     }, media.duration);
                 };
-                img.src = media.src;
             }
         }
-
-        
 
         // 初始化日记系统
         function loadDiaries() {
@@ -888,8 +926,12 @@
                     content: '今天是周三，我们今天又考试了，今天还是想亲亲~ ~ ~，今天考试你像小傻蛋怪可爱的嘞，但是最后你还白眼我让我好心寒哦，现在是晚自习，我在思考什么时候把网站告诉你 给你看，是周五还是18号呢，好纠结'
                 },
                 {
-                    date: '2025-06-12',
-                    content: '今天是周四，今天又又是想亲亲的一天~ ~ ~，今天一起画了石膏哇哇嘿嘿真好看，但是今天yyf和czy吵架，希望不要殃及我们嘿嘿，现在是晚自习，今天不纠结什么时候告诉你了，今天网站被你发现了，打算明天就告诉你啦~ ~ ~'
+                    日期:'2025-06-12',
+                    内容:'今天是周四，今天又又是想亲亲的一天~ ~ ~，今天一起画了石膏哇哇嘿嘿真好看，但是今天yyf和czy吵架，希望不要殃及我们嘿嘿，现在是晚自习，今天不纠结什么时候告诉你了，今天网站被你发现了，打算明天就告诉你啦~ ~ ~'
+                },
+             {
+                    日期:'2025-06-13',
+                    内容:'今天是周五，今天又又又是想亲亲的一天~ ~ ~，宝宝不要难过哦，没事哒我们还有以后哒~ ~ ~，今天放学都没有亲亲嘤嘤嘤，今天给你看了我们的小网站，不知道你开不开心嘻嘻嘻，现在改了这个视频的bug，一会发给你看看~ ~ ~'
                 },
 
             ];
